@@ -12,6 +12,7 @@
 #include "p_local.h"
 #include "soundst.h"
 #include "v_compat.h"
+#include "i_system.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -75,13 +76,11 @@ int eventtail;
 static int demosequence;
 static int pagetic;
 static const char *pagename;
+static char basedefault[1024];
 
 static const char *wadfiles[MAXWADFILES + 1] =
 {
 	"heretic.wad",
-	"texture1.lmp",
-	"texture2.lmp",
-	"pnames.lmp",
 	NULL	/* the last entry MUST be NULL */
 };
 
@@ -827,9 +826,11 @@ void InitThermo(int x) {}
 
 void D_DoomMain(void)
 {
-	int p, e, m;
+	int p, e, m, i;
 	char file[MAX_OSPATH];
 	boolean devMap;
+	char *slash;
+	char *wadloc[nelem(wadfiles)];
 
 	M_FindResponseFile();
 	setbuf(stdout, NULL);
@@ -844,7 +845,7 @@ void D_DoomMain(void)
 	autostart = false;
 
 	// wadfiles[0] is a char * to the main wad
-	if (!W_IsWadPresent(wadfiles[0]))
+	if (!I_IdentifyWAD(wadfiles[0]))
 	{ // Change to look for shareware wad
 		wadfiles[0] = SHAREWAREWADNAME;
 	}
@@ -928,15 +929,26 @@ void D_DoomMain(void)
 	printf("V_Init: allocate screens.\n");
 	V_Init();
 
-	// Load defaults before initing other systems
-	printf("M_LoadDefaults: Load system defaults.\n");
-	M_LoadDefaults(CONFIG_FILE_NAME);
-
 	printf("Z_Init: Init zone memory allocation daemon.\n");
 	Z_Init();
 
+	for(i = 0; i < nelem(wadfiles); i++){
+		if(wadfiles[i] == nil){
+			wadloc[i] = nil;
+			break;
+		} else
+			wadloc[i] = I_IdentifyWAD(wadfiles[i]);
+		print("%s %s\n", wadfiles[i], wadloc[i]);
+	}
 	printf("W_Init: Init WADfiles.\n");
-	W_InitMultipleFiles(wadfiles);
+	W_InitMultipleFiles(wadloc);
+
+	strncpy(basedefault, wadloc[0], sizeof(basedefault)-5);
+	basedefault[sizeof(basedefault)-5] = '\0';
+	slash = strrchr(basedefault, '/');
+	if (slash++ == 0)
+		slash = basedefault;
+	strcpy(slash, "cfg");
 
 	if (W_CheckNumForName("E2M1") == -1)
 	{ // Can't find episode 2 maps, must be the shareware WAD
@@ -946,6 +958,10 @@ void D_DoomMain(void)
 	{ // Found extended lump, must be the extended WAD
 		ExtendedWAD = true;
 	}
+
+	// Load defaults before initing other systems
+	printf("M_LoadDefaults: Load system defaults.\n");
+	M_LoadDefaults(basedefault);
 
 #if defined(__WATCOMC__) && defined(_DOS)
 	I_StartupKeyboard();

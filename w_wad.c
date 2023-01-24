@@ -102,27 +102,8 @@ void W_AddFile(const char *filename)
 	filelump_t *freeFileInfo;
 	int i;
 
-	handle = -1;
-	/* try the directory from the command line or
-	 *  from the shared data environment variable.
-	 */
-	if (waddir && *waddir)
-	{
-		snprintf (path, sizeof(path), "%s/%s", waddir, filename);
-		handle = open(path, OREAD);
-	}
-#if !defined(_NO_USERDIRS)
-	if (handle == -1)	/* Try UserDIR */
-	{
-		snprintf (path, sizeof(path), "%s%s", basePath, filename);
-		handle = open(path, OREAD);
-	}
-#endif	/* !_NO_USERDIRS */
-	if (handle == -1)	/* Now try CWD */
-	{
-		handle = open(filename, OREAD);
-	}
-	if (handle == -1)
+	handle = open(filename, OREAD);
+	if (handle < 0)
 		return;		/* Didn't find the file. */
 
 	startlump = numlumps;
