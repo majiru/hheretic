@@ -1980,6 +1980,7 @@ void MN_ActivateMenu(void)
 	{
 		S_ResumeSound();
 	}
+	I_MouseEnable(0);
 	MenuActive = true;
 	FileMenuKeySteal = false;
 	MenuTime = 0;
@@ -2016,6 +2017,7 @@ void MN_DeactivateMenu(void)
 	}
 	players[consoleplayer].message = NULL;
 	players[consoleplayer].messageTics = 1;
+	I_MouseEnable(1);
 }
 
 //---------------------------------------------------------------------------
