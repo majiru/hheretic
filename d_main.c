@@ -229,11 +229,30 @@ Events can be discarded if no responder claims them
 //
 //---------------------------------------------------------------------------
 
-void D_PostEvent(event_t *ev)
+QLock		eventlock;
+
+
+//
+// D_PostEvent
+// Called by the I/O functions when input is detected
+//
+void D_PostEvent (event_t* ev)
 {
-	events[eventhead] = *ev;
-	eventhead++;
-	eventhead &= (MAXEVENTS - 1);
+    int next;
+
+retry:
+    qlock(&eventlock);
+    next = (eventhead+1)&(MAXEVENTS-1);
+    if(next == eventtail){
+        qunlock(&eventlock);
+        if(ev->type != ev_keydown && ev->type != ev_keyup)
+            return;
+        sleep(1);
+        goto retry;
+    }
+    events[eventhead] = *ev;
+    eventhead = next;
+    qunlock(&eventlock);
 }
 
 //---------------------------------------------------------------------------
