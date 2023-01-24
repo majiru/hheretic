@@ -50,7 +50,7 @@ extern boolean askforquit;
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-const char *basePath = DUMMY_BASEPATH;
+char *basePath = DUMMY_BASEPATH;
 boolean shareware = false;		// true if only episode 1 present
 boolean ExtendedWAD = false;	// true if episodes 4 and 5 present
 
@@ -943,12 +943,13 @@ void D_DoomMain(void)
 	printf("W_Init: Init WADfiles.\n");
 	W_InitMultipleFiles(wadloc);
 
-	strncpy(basedefault, wadloc[0], sizeof(basedefault)-5);
-	basedefault[sizeof(basedefault)-5] = '\0';
+	strcpy(basedefault, wadloc[0]);
 	slash = strrchr(basedefault, '/');
-	if (slash++ == 0)
-		slash = basedefault;
-	strcpy(slash, "cfg");
+	if (!slash)
+		basedefault[0] = '\0';
+	else
+		slash[1] = '\0';
+	basePath = basedefault;
 
 	if (W_CheckNumForName("E2M1") == -1)
 	{ // Can't find episode 2 maps, must be the shareware WAD
@@ -961,7 +962,7 @@ void D_DoomMain(void)
 
 	// Load defaults before initing other systems
 	printf("M_LoadDefaults: Load system defaults.\n");
-	M_LoadDefaults(basedefault);
+	M_LoadDefaults("cfg");
 
 #if defined(__WATCOMC__) && defined(_DOS)
 	I_StartupKeyboard();
