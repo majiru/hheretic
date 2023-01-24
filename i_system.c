@@ -43,6 +43,7 @@ void I_Quit (void)
 	I_ShutdownSound();
 	M_SaveDefaults ();
 	I_ShutdownGraphics();
+	postnote(PNGROUP, getpid(), "I_Quit");
 	exits(nil);
 }
 
