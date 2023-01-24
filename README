@@ -1,3 +1,10 @@
-Plan9 port of HHeretic
+Plan9 port of Heretic.
 
-https://github.com/sezero/hheretic
+WADs:
+	place 'heretic.wad' in $home/lib/heretic or /sys/games/lib/heretic
+
+Install:
+	mk install
+
+Upstream:
+	https://hhexen.sourceforge.net/hheretic.html
