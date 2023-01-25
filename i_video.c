@@ -28,6 +28,9 @@ static uchar cmap[3*256];
 static int kbdpid = -1;
 static int mousepid = -1;
 
+static Image *backtile = nil;
+static uchar tiledata[4096*3];
+
 static void
 catch(void *, char *msg)
 {
@@ -35,6 +38,32 @@ catch(void *, char *msg)
 	if(strncmp(msg, "sys:", 4) == 0)
 		mouseactive = 0;
 	noted(NDFLT);
+}
+
+static void I_UpdateTile(void)
+{
+	uchar *s, *d, *m;
+	uchar *e;
+
+	if(backtile == nil){
+		if(shareware)
+			s = W_CacheLumpName ("FLOOR04", PU_CACHE);
+		else
+			s = W_CacheLumpName ("FLAT513", PU_CACHE);
+		d = tiledata;
+		e = s + 4096;
+		for(; s < e; s++){
+			m = &cmap[*s * 3];
+			*d++ = m[2];
+			*d++ = m[1];
+			*d++ = m[0];
+		}
+		backtile = allocimage(display, Rect(0, 0, 64, 64), RGB24, 1, DNofill);
+		loadimage(backtile, backtile->r, tiledata, sizeof tiledata);
+		if(backtile == nil)
+			sysfatal("allocimage: %r");
+	}
+	draw(screen, screen->r, backtile, nil, ZP);
 }
 
 void I_InitGraphics(void)
@@ -46,7 +75,8 @@ void I_InitGraphics(void)
 	if(initdraw(nil, nil, "heretic") < 0)
 		I_Error("I_InitGraphics failed");
 
-	draw(screen, screen->r, display->black, nil, ZP);
+	I_SetPalette ((byte *)W_CacheLumpName("PLAYPAL", PU_CACHE));
+	I_UpdateTile();
 
 	center = addpt(screen->r.min, Pt(Dx(screen->r)/2, Dy(screen->r)/2));
 	grabout = insetrect(screen->r, Dx(screen->r)/8);
@@ -62,8 +92,6 @@ void I_InitGraphics(void)
 		exits(nil);
 	}
 	mousepid = pid;
-
-	I_SetPalette ((byte *)W_CacheLumpName("PLAYPAL", PU_CACHE));
 }
 
 void I_ShutdownGraphics(void)
@@ -112,9 +140,7 @@ void I_Update(void)
 		if(getwindow(display, Refnone) < 0)
 			sysfatal("getwindow: %r");
 
-		/* make black background */
-		draw(screen, screen->r, display->black, nil, ZP);
-
+		I_UpdateTile();
 		center = addpt(screen->r.min, Pt(Dx(screen->r)/2, Dy(screen->r)/2));
 		grabout = insetrect(screen->r, Dx(screen->r)/8);
 	}
