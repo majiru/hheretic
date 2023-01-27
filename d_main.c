@@ -863,12 +863,6 @@ void D_DoomMain(void)
 	startmap = 1;
 	autostart = false;
 
-	// wadfiles[0] is a char * to the main wad
-	if (!I_IdentifyWAD(wadfiles[0]))
-	{ // Change to look for shareware wad
-		wadfiles[0] = SHAREWAREWADNAME;
-	}
-
 	// -FILE [filename] [filename] ...
 	// Add files to the wad list.
 	p = M_CheckParm("-file");
@@ -951,24 +945,9 @@ void D_DoomMain(void)
 	printf("Z_Init: Init zone memory allocation daemon.\n");
 	Z_Init();
 
-	for(i = 0; i < nelem(wadfiles); i++){
-		if(wadfiles[i] == nil){
-			wadloc[i] = nil;
-			break;
-		} else
-			wadloc[i] = I_IdentifyWAD(wadfiles[i]);
-		print("%s %s\n", wadfiles[i], wadloc[i]);
-	}
 	printf("W_Init: Init WADfiles.\n");
-	W_InitMultipleFiles(wadloc);
-
-	strcpy(basedefault, wadloc[0]);
-	slash = strrchr(basedefault, '/');
-	if (!slash)
-		basedefault[0] = '\0';
-	else
-		slash[1] = '\0';
-	basePath = basedefault;
+	I_SetupPath(wadfiles);
+	W_InitMultipleFiles(wadfiles);
 
 	if (W_CheckNumForName("E2M1") == -1)
 	{ // Can't find episode 2 maps, must be the shareware WAD
