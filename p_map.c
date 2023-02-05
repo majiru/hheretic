@@ -1651,8 +1651,8 @@ static boolean PIT_ChangeSector (mobj_t *thing)
 		P_DamageMobj(thing, NULL, NULL, 10);
 		// spray blood in a random direction
 		mo = P_SpawnMobj (thing->x, thing->y, thing->z + thing->height/2, MT_BLOOD);
-		mo->momx = (P_Random() - P_Random ())<<12;
-		mo->momy = (P_Random() - P_Random ())<<12;
+		mo->momx = (P_Random2 ())<<12;
+		mo->momy = (P_Random2 ())<<12;
 	}
 
 	return true;		// keep checking (crush other things)

@@ -174,6 +174,14 @@ int P_Random (void)
 	return rndtable[prndindex];
 }
 
+int P_Random2 (void)
+{
+	int tmp, tmp2;
+	tmp = P_Random();
+	tmp2 = P_Random();
+	return tmp - tmp2;
+}
+
 int M_Random (void)
 {
 	rndindex = (rndindex + 1) & 0xff;

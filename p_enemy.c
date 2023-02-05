@@ -782,7 +782,7 @@ void A_FaceTarget(mobj_t *actor)
 	actor->angle = R_PointToAngle2(actor->x, actor->y, actor->target->x, actor->target->y);
 	if (actor->target->flags & MF_SHADOW)
 	{ // Target is a ghost
-		actor->angle += (P_Random() - P_Random()) << 21;
+		actor->angle += (P_Random2()) << 21;
 	}
 }
 
@@ -809,12 +809,16 @@ void A_Pain(mobj_t *actor)
 void A_DripBlood(mobj_t *actor)
 {
 	mobj_t *mo;
+	int a, b;
 
-	mo = P_SpawnMobj(actor->x + ((P_Random() - P_Random())<<11),
-			 actor->y + ((P_Random() - P_Random())<<11),
+	b = ((P_Random2())<<11);
+	a = ((P_Random2())<<11);
+
+	mo = P_SpawnMobj(actor->x + a,
+			 actor->y + b,
 			 actor->z, MT_BLOOD);
-	mo->momx = (P_Random() - P_Random())<<10;
-	mo->momy = (P_Random() - P_Random())<<10;
+	mo->momx = (P_Random2())<<10;
+	mo->momy = (P_Random2())<<10;
 	mo->flags2 |= MF2_LOGRAV;
 }
 
@@ -858,12 +862,12 @@ void A_ImpExplode(mobj_t *actor)
 	mobj_t *mo;
 
 	mo = P_SpawnMobj(actor->x, actor->y, actor->z, MT_IMPCHUNK1);
-	mo->momx = (P_Random() - P_Random ())<<10;
-	mo->momy = (P_Random() - P_Random ())<<10;
+	mo->momx = (P_Random2 ())<<10;
+	mo->momy = (P_Random2 ())<<10;
 	mo->momz = 9*FRACUNIT;
 	mo = P_SpawnMobj(actor->x, actor->y, actor->z, MT_IMPCHUNK2);
-	mo->momx = (P_Random() - P_Random ())<<10;
-	mo->momy = (P_Random() - P_Random ())<<10;
+	mo->momx = (P_Random2 ())<<10;
+	mo->momy = (P_Random2 ())<<10;
 	mo->momz = 9*FRACUNIT;
 	if (actor->special1 == 666)
 	{ // Extreme death crash
@@ -879,11 +883,16 @@ void A_ImpExplode(mobj_t *actor)
 
 void A_BeastPuff(mobj_t *actor)
 {
+	int a, b, c;
+
 	if (P_Random() > 64)
 	{
-		P_SpawnMobj(actor->x + ((P_Random() - P_Random())<<10),
-			    actor->y+((P_Random() - P_Random())<<10),
-			    actor->z+((P_Random() - P_Random())<<10), MT_PUFFY);
+		c = ((P_Random2())<<10);
+		b = ((P_Random2())<<10);
+		a = ((P_Random2())<<10);
+		P_SpawnMobj(actor->x + a,
+			    actor->y + b,
+			    actor->z + c, MT_PUFFY);
 	}
 }
 
@@ -1147,8 +1156,8 @@ void A_Feathers(mobj_t *actor)
 	{
 		mo = P_SpawnMobj(actor->x, actor->y, actor->z + 20*FRACUNIT, MT_FEATHER);
 		mo->target = actor;
-		mo->momx = (P_Random() - P_Random())<<8;
-		mo->momy = (P_Random() - P_Random())<<8;
+		mo->momx = (P_Random2())<<8;
+		mo->momy = (P_Random2())<<8;
 		mo->momz = FRACUNIT + (P_Random()<<9);
 		P_SetMobjState(mo, S_FEATHER1 + (P_Random() & 7));
 	}
@@ -1440,8 +1449,8 @@ void A_BlueSpark(mobj_t *actor)
 	for (i = 0; i < 2; i++)
 	{
 		mo = P_SpawnMobj(actor->x, actor->y, actor->z, MT_SOR2FXSPARK);
-		mo->momx = (P_Random() - P_Random())<<9;
-		mo->momy = (P_Random() - P_Random())<<9;
+		mo->momx = (P_Random2())<<9;
+		mo->momy = (P_Random2())<<9;
 		mo->momz = FRACUNIT + (P_Random()<<8);
 	}
 }
@@ -1721,10 +1730,13 @@ void A_MinotaurAtk3(mobj_t *actor)
 void A_MntrFloorFire(mobj_t *actor)
 {
 	mobj_t *mo;
+	int a, b;
 
 	actor->z = actor->floorz;
-	mo = P_SpawnMobj(actor->x + ((P_Random() - P_Random()) << 10),
-			 actor->y + ((P_Random() - P_Random()) << 10), ONFLOORZ, MT_MNTRFX3);
+	b = ((P_Random2()) << 10);
+	a = ((P_Random2()) << 10);
+	mo = P_SpawnMobj(actor->x + a,
+			 actor->y + b, ONFLOORZ, MT_MNTRFX3);
 	mo->target = actor->target;
 	mo->momx = 1; // Force block checking
 	P_CheckMissileSpawn(mo);
@@ -2086,8 +2098,8 @@ void P_DropItem(mobj_t *source, mobjtype_t type, int special, int chance)
 	}
 	mo = P_SpawnMobj(source->x, source->y,
 			 source->z + (source->height>>1), type);
-	mo->momx = (P_Random() - P_Random())<<8;
-	mo->momy = (P_Random() - P_Random())<<8;
+	mo->momx = (P_Random2())<<8;
+	mo->momy = (P_Random2())<<8;
 	mo->momz = FRACUNIT*5 + (P_Random()<<10);
 	mo->flags |= MF_DROPPED;
 	mo->health = special;
@@ -2197,8 +2209,8 @@ void A_PodPain(mobj_t *actor)
 		goo = P_SpawnMobj(actor->x, actor->y,
 				  actor->z + 48*FRACUNIT, MT_PODGOO);
 		goo->target = actor;
-		goo->momx = (P_Random() - P_Random())<<9;
-		goo->momy = (P_Random() - P_Random())<<9;
+		goo->momx = (P_Random2())<<9;
+		goo->momy = (P_Random2())<<9;
 		goo->momz = FRACUNIT/2 + (P_Random()<<9);
 	}
 }
@@ -2370,9 +2382,12 @@ void A_ESound(mobj_t *mo)
 void A_SpawnTeleGlitter(mobj_t *actor)
 {
 	mobj_t *mo;
+	int a, b;
 
-	mo = P_SpawnMobj(actor->x + ((P_Random() & 31) - 16) * FRACUNIT,
-			 actor->y + ((P_Random() & 31) - 16) * FRACUNIT,
+	b = ((P_Random() & 31) - 16) * FRACUNIT;
+	a = ((P_Random() & 31) - 16) * FRACUNIT;
+	mo = P_SpawnMobj(actor->x + a,
+			 actor->y + b,
 			 actor->subsector->sector->floorheight, MT_TELEGLITTER);
 	mo->momz = FRACUNIT/4;
 }
@@ -2528,8 +2543,8 @@ void A_SkullPop(mobj_t *actor)
 	mo = P_SpawnMobj(actor->x, actor->y, actor->z + 48*FRACUNIT,
 						MT_BLOODYSKULL);
 	//mo->target = actor;
-	mo->momx = (P_Random() - P_Random())<<9;
-	mo->momy = (P_Random() - P_Random())<<9;
+	mo->momx = (P_Random2())<<9;
+	mo->momy = (P_Random2())<<9;
 	mo->momz = FRACUNIT*2 + (P_Random()<<6);
 	// Attach player mobj to bloody skull
 	player = actor->player;

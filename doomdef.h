@@ -1280,6 +1280,7 @@ int M_Random (void);
 /* returns a number from 0 to 255 */
 
 int P_Random (void);
+int P_Random2 (void);
 /* as M_Random, but used only by the play simulation */
 
 void M_ClearRandom (void);
